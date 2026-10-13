@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bihar Darshan</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">
+    <div class="brand-mark">🛕</div>
+    <div class="brand-text">
+      <div class="brand-name" id="brandName">बिहार दर्शन</div>
+      <div class="brand-sub" id="brandSub">इतिहास • संस्कृति • धरोहर</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button id="favFilterBtn" class="icon-btn" title="Favorites">♡</button>
+    <button id="langBtn" class="lang-btn">EN</button>
+  </div>
+</header>
+
+<div id="searchBar">
+  <input id="searchInput" type="search" placeholder="खोजें…  /  Search…">
+</div>
+
+<main id="view-home">
+  <section id="hero">
+    <video id="heroVideo" autoplay muted loop playsinline poster="img/bodhgaya-1.jpg">
+      <source src="videos/hero-montage.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay">
+      <h1 id="heroTitle">बिहार दर्शन</h1>
+      <p id="heroTag">जहाँ इतिहास साँस लेता है — 12 धरोहरों की 3D यात्रा</p>
+      <button id="heroExplore" class="cta-btn">यात्रा शुरू करें ↓</button>
+    </div>
+  </section>
+
+  <section id="videoStrip" class="strip">
+    <h2 id="videoTitle">🎬 झलकियाँ</h2>
+    <div class="hscroll" id="videoRow"></div>
+  </section>
+
+  <section id="cardsSection">
+    <h2 id="placesTitle">📍 12 धरोहर स्थल</h2>
+    <div id="cards" class="cards"></div>
+  </section>
+
+  <footer id="foot">
+    <p id="footText">बिहार दर्शन • Hasnain Khan द्वारा निर्मित</p>
+  </footer>
+</main>
+
+<main id="view-detail" hidden>
+  <div class="detail-top">
+    <button id="backBtn" class="back-btn">← <span id="backTxt">वापस</span></button>
+    <button id="detailFav" class="icon-btn">♡</button>
+  </div>
+  <div class="detail-head">
+    <img id="dImg" alt="">
+    <div class="detail-titles">
+      <h1 id="dName"></h1>
+      <p id="dTag"></p>
+    </div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="t3d" class="on">🌀 <span data-i18n="t3d">3D दृश्य</span></button>
+    <button data-tab="story">📖 <span data-i18n="story">कथा</span></button>
+    <button data-tab="facts">✨ <span data-i18n="facts">तथ्य</span></button>
+    <button data-tab="gallery">🖼️ <span data-i18n="gallery">गैलरी</span></button>
+  </nav>
+  <section id="pane-t3d" class="pane">
+    <div id="glWrap"><canvas id="gl"></canvas></div>
+    <div class="gl-bar">
+      <button id="dayNightBtn" class="pill-btn">🌙 <span id="dnTxt">रात्रि</span></button>
+      <button id="rotBtn" class="pill-btn on">🔁 <span id="rotTxt">घुमाव</span></button>
+      <span class="gl-hint" id="glHint">उँगली से घुमाएँ • ज़ूम करें</span>
+    </div>
+  </section>
+  <section id="pane-story" class="pane" hidden><article id="storyBody"></article></section>
+  <section id="pane-facts" class="pane" hidden><ol id="factsBody"></ol></section>
+  <section id="pane-gallery" class="pane" hidden><div id="galBody" class="gal"></div></section>
+</main>
+
+<script src="three.min.js"></script>
+<script src="data/places.js"></script>
+<script src="data/places-islamic.js"></script>
+<script src="data/places-extra.js"></script>
+<script src="data/places-rajgir.js"></script>
+<script src="js/scenes3d.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
