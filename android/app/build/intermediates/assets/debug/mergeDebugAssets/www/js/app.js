@@ -190,8 +190,11 @@ var nightMode = false, autoRot = true, bd3d = null;
 var kbTimer = null;
 function startCinematic(place){
   stopCinematic();
-  var wrap = $('gl');
+  var wrap = $('glWrap');
   if(!wrap) return;
+  // canvas hatao, div lagao
+  var cv = $('gl');
+  if(cv) cv.style.display = 'none';
   wrap.innerHTML = '';
   wrap.style.position = 'relative';
   wrap.style.overflow = 'hidden';
@@ -213,6 +216,10 @@ function startCinematic(place){
 }
 function stopCinematic(){
   if(kbTimer){ clearInterval(kbTimer); kbTimer = null; }
+  var wrap = $('glWrap');
+  if(wrap) wrap.innerHTML = '<canvas id="gl"></canvas>';
+  var cv = $('gl');
+  if(cv) cv.style.display = '';
 }
 
 function switchTab(name){
@@ -229,7 +236,7 @@ function switchTab(name){
 }
 
 
-var APP_VC = 6; // internal versionCode — bump on each release
+var APP_VC = 7; // internal versionCode — bump on each release
 var BD_CDN_V = 2; // bundled content version — bump when places.json changes
 var CDN_BASE = 'https://cdn.jsdelivr.net/gh/Ruhvibes/bihardarshan@main/cdn/';
 function checkContent(){
