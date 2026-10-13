@@ -229,8 +229,8 @@ function switchTab(name){
 }
 
 
-var APP_VC = 5; // internal versionCode — bump on each release
-var BD_CDN_V = 1; // bundled content version — bump when places.json changes
+var APP_VC = 6; // internal versionCode — bump on each release
+var BD_CDN_V = 2; // bundled content version — bump when places.json changes
 var CDN_BASE = 'https://cdn.jsdelivr.net/gh/Ruhvibes/bihardarshan@main/cdn/';
 function checkContent(){
   // CDN content update: nayi jagah/kahani bina APK ke!

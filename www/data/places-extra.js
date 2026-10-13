@@ -103,7 +103,7 @@ window.BD_PLACES_EXTRA = [
     'Formally inaugurated as a developed tourist destination on 3 August 2024.',
     'About 140 km from Patna; best visited in the monsoon and winter.'
   ],
-  img: ['img/kakolat-1.jpg','img/kakolat-2.jpg'],
+  img: ['img/kakolat-1.jpg','img/kakolat-2.jpg','img/kakolat-3.jpg','img/kakolat-4.jpg','img/kakolat-5.jpg','img/kakolat-6.jpg','img/kakolat-7.jpg'],
   scene: 'kakolat'
 },
 {
