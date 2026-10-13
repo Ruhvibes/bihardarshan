@@ -18,7 +18,8 @@ var T = {
     glHint:'उँगली से घुमाएँ • चुटकी से ज़ूम करें',
     noResult:'कोई स्थान नहीं मिला।', noFav:'अभी कोई पसंदीदा नहीं — ♡ दबाकर जोड़ें।',
     foot:'बिहार दर्शन • Hasnain Khan द्वारा निर्मित',
-    vids:{hero:'बिहार — एक झलक',chhath:'छठ पूजा',nalanda:'नालंदा',bodhgaya:'बोधगया',kakolat:'ककोलत',valmiki:'वाल्मीकि'}
+    updBanner:'↑ नया अपडेट आया है! टैप करें',
+    vids:{hero:'बिहार — एक झलक',chhath:'छठ पूजा',nalanda:'नालंदा',bodhgaya:'बोधगया',kakolat:'ककोलत',valmiki:'वाल्मीकि',rajgir:'राजगीर',vaishali:'वैशाली',patna:'पटना',sasaram:'सासाराम',sonepur:'सोनपुर मेला',pawapuri:'पावापुरी'}
   },
   en: {
     brandSub:'History • Culture • Heritage', searchPh:'Search…  /  खोजें…',
@@ -29,7 +30,8 @@ var T = {
     glHint:'Drag to rotate • pinch to zoom',
     noResult:'No places found.', noFav:'No favourites yet — tap ♡ to add.',
     foot:'Bihar Darshan • Built by Hasnain Khan',
-    vids:{hero:'Bihar — a glimpse',chhath:'Chhath Puja',nalanda:'Nalanda',bodhgaya:'Bodh Gaya',kakolat:'Kakolat',valmiki:'Valmiki'}
+    updBanner:'↑ New update available! Tap here',
+    vids:{hero:'Bihar — a glimpse',chhath:'Chhath Puja',nalanda:'Nalanda',bodhgaya:'Bodh Gaya',kakolat:'Kakolat',valmiki:'Valmiki',rajgir:'Rajgir',vaishali:'Vaishali',patna:'Patna',sasaram:'Sasaram',sonepur:'Sonepur Fair',pawapuri:'Pawapuri'}
   }
 };
 
@@ -37,6 +39,15 @@ function t(k){ return T[LANG][k]; }
 function P(p, f){ return LANG==='hi' ? p[f+'Hi'] : p[f+'En']; }
 
 function getPlaces(){
+  // CDN: cached remote content overrides bundled (nayi jagah bina APK update ke!)
+  try {
+    var cached = localStorage.getItem('bd_cdn_places');
+    var cv = parseInt(localStorage.getItem('bd_cdn_v')||'0', 10);
+    if (cached && cv >= BD_CDN_V) {
+      var parsed = JSON.parse(cached);
+      if (parsed && parsed.length) return parsed;
+    }
+  } catch(e){}
   var list = (window.BD_PLACES||[]).slice();
   (window.BD_PLACES_ISLAMIC||[]).forEach(function(p){
     var i = list.findIndex(function(q){ return q.id===p.id; });
@@ -85,7 +96,13 @@ function renderVideos(){
     ['videos/nalanda.mp4','nalanda','img/nalanda-1.jpg'],
     ['videos/bodhgaya.mp4','bodhgaya','img/bodhgaya-2.jpg'],
     ['videos/kakolat.mp4','kakolat','img/kakolat-1.jpg'],
-    ['videos/valmiki.mp4','valmiki','img/valmiki-1.jpg']
+    ['videos/valmiki.mp4','valmiki','img/valmiki-1.jpg'],
+    ['videos/rajgir.mp4','rajgir','img/rajgir-1.jpg'],
+    ['videos/vaishali.mp4','vaishali','img/vaishali-1.jpg'],
+    ['videos/patna.mp4','patna','img/patna-1.jpg'],
+    ['videos/sasaram.mp4','sasaram','img/sasaram-1.jpg'],
+    ['videos/sonepur.mp4','sonepur','img/sonepur-1.jpg'],
+    ['videos/pawapuri.mp4','pawapuri','img/pawapuri-1.jpg']
   ];
   $('videoRow').innerHTML = vids.map(function(v){
     return '<div class="vid-card"><video src="'+v[0]+'" poster="'+v[2]+'" preload="metadata" playsinline muted loop></video><p>'+T[LANG].vids[v[1]]+'</p></div>';
@@ -186,6 +203,62 @@ function switchTab(name){
   }
 }
 
+
+var APP_VC = 4; // internal versionCode — bump on each release
+var BD_CDN_V = 1; // bundled content version — bump when places.json changes
+var CDN_BASE = 'https://cdn.jsdelivr.net/gh/Ruhvibes/bihardarshan@main/cdn/';
+function checkContent(){
+  // CDN content update: nayi jagah/kahani bina APK ke!
+  try {
+    var last = parseInt(localStorage.getItem('bd_cdn_check')||'0', 10);
+    if (Date.now() - last < 86400000) return; // once/day
+    localStorage.setItem('bd_cdn_check', String(Date.now()));
+  } catch(e){}
+  fetch(CDN_BASE + 'content-version.json?t=' + Date.now(), {cache:'no-store'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){
+      if (!j || !j.v || j.v <= BD_CDN_V) return;
+      var cv = 0;
+      try { cv = parseInt(localStorage.getItem('bd_cdn_v')||'0', 10); } catch(e){}
+      if (j.v <= cv) return; // already cached
+      return fetch(CDN_BASE + 'places.json?t=' + Date.now(), {cache:'no-store'})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(places){
+          if (!places || !places.length) return;
+          try {
+            localStorage.setItem('bd_cdn_places', JSON.stringify(places));
+            localStorage.setItem('bd_cdn_v', String(j.v));
+            toast(LANG==='hi' ? '🎉 नया कंटेंट आ गया! ऐप दोबारा खोलें' : '🎉 New content arrived! Reopen app');
+          } catch(e){}
+        });
+    })
+    .catch(function(){});
+}
+
+function checkUpdate(){
+  try {
+    var last = parseInt(localStorage.getItem('bd_upd_check')||'0', 10);
+    if (Date.now() - last < 86400000) return; // once/day
+    localStorage.setItem('bd_upd_check', String(Date.now()));
+  } catch(e){}
+  fetch('https://raw.githubusercontent.com/Ruhvibes/bihardarshan/main/version.json?t='+Date.now(), {cache:'no-store'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){
+      if (!j || !j.versionCode || j.versionCode <= APP_VC || !j.apkUrl) return;
+      var bar = document.createElement('div');
+      bar.id = 'upd-bar';
+      bar.textContent = t('updBanner');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#ff6b35;color:#fff;text-align:center;padding:12px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+      bar.addEventListener('click', function(){
+        if (window.Android && typeof window.Android.downloadApk === 'function') {
+          try { window.Android.downloadApk(j.apkUrl); } catch(e){ window.open(j.apkUrl, '_blank'); }
+        } else { window.open(j.apkUrl, '_blank'); }
+      });
+      document.body.appendChild(bar);
+    })
+    .catch(function(){});
+}
+
 function init(){
   $('langBtn').addEventListener('click', function(){
     LANG = LANG==='hi' ? 'en' : 'hi';
@@ -233,6 +306,8 @@ function init(){
     v.addEventListener('error', function(){ v.style.display='none'; }, true);
   });
   applyLang();
+  checkUpdate();
+  checkContent();
 }
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
