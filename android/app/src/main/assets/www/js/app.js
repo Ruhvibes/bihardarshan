@@ -13,7 +13,7 @@ var T = {
     brandSub:'इतिहास • संस्कृति • धरोहर', searchPh:'खोजें…  /  Search…',
     heroTag:'जहाँ इतिहास साँस लेता है — धरोहरों की 3D यात्रा',
     heroBtn:'यात्रा शुरू करें ↓', videos:'🎬 झलकियाँ',
-    places:'📍 धरोहर स्थल', back:'वापस', t3d:'3D दृश्य', story:'कथा',
+    places:'📍 धरोहर स्थल', back:'वापस', t3d:'🎬 झलक', story:'कथा',
     facts:'तथ्य', gallery:'गैलरी', night:'रात्रि', day:'दिवस', rot:'घुमाव',
     glHint:'उँगली से घुमाएँ • चुटकी से ज़ूम करें',
     noResult:'कोई स्थान नहीं मिला।', noFav:'अभी कोई पसंदीदा नहीं — ♡ दबाकर जोड़ें।',
@@ -25,7 +25,7 @@ var T = {
     brandSub:'History • Culture • Heritage', searchPh:'Search…  /  खोजें…',
     heroTag:'Where history breathes — a 3D journey through heritage',
     heroBtn:'Start Journey ↓', videos:'🎬 Glimpses',
-    places:'📍 Heritage Places', back:'Back', t3d:'3D View', story:'Story',
+    places:'📍 Heritage Places', back:'Back', t3d:'🎬 Cinematic', story:'Story',
     facts:'Facts', gallery:'Gallery', night:'Night', day:'Day', rot:'Rotate',
     glHint:'Drag to rotate • pinch to zoom',
     noResult:'No places found.', noFav:'No favourites yet — tap ♡ to add.',
@@ -187,6 +187,34 @@ function updateDetailFav(){
 
 var nightMode = false, autoRot = true, bd3d = null;
 
+var kbTimer = null;
+function startCinematic(place){
+  stopCinematic();
+  var wrap = $('gl');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  wrap.style.position = 'relative';
+  wrap.style.overflow = 'hidden';
+  var imgs = place.img || [];
+  if(!imgs.length) return;
+  imgs.forEach(function(src, i){
+    var d = document.createElement('div');
+    d.className = 'kb-slide' + (i===0 ? ' kb-active' : '');
+    d.style.backgroundImage = "url('"+src+"')";
+    wrap.appendChild(d);
+  });
+  var idx = 0;
+  var slides = wrap.querySelectorAll('.kb-slide');
+  kbTimer = setInterval(function(){
+    slides[idx].classList.remove('kb-active');
+    idx = (idx + 1) % slides.length;
+    slides[idx].classList.add('kb-active');
+  }, 6000);
+}
+function stopCinematic(){
+  if(kbTimer){ clearInterval(kbTimer); kbTimer = null; }
+}
+
 function switchTab(name){
   document.querySelectorAll('#tabs button').forEach(function(b){
     b.classList.toggle('on', b.getAttribute('data-tab')===name);
@@ -194,17 +222,14 @@ function switchTab(name){
   ['t3d','story','facts','gallery'].forEach(function(n){
     $('pane-'+n).hidden = (n!==name);
   });
-  if(name==='t3d' && currentPlace && window.BD3D){
-    setTimeout(function(){
-      bd3d = window.BD3D.show($('gl'), currentPlace.scene, {night:nightMode, rotate:autoRot});
-    }, 60);
-  } else if(window.BD3D){
-    window.BD3D.stop();
+  if(name==='t3d' && currentPlace){
+    startCinematic(currentPlace);
   }
+  if(window.BD3D){ try{ window.BD3D.stop(); }catch(e){} }
 }
 
 
-var APP_VC = 4; // internal versionCode — bump on each release
+var APP_VC = 5; // internal versionCode — bump on each release
 var BD_CDN_V = 1; // bundled content version — bump when places.json changes
 var CDN_BASE = 'https://cdn.jsdelivr.net/gh/Ruhvibes/bihardarshan@main/cdn/';
 function checkContent(){
@@ -275,7 +300,8 @@ function init(){
     $('cardsSection').scrollIntoView({behavior:'smooth'});
   });
   $('backBtn').addEventListener('click', function(){
-    if(window.BD3D) window.BD3D.stop();
+    stopCinematic();
+    if(window.BD3D) try{ window.BD3D.stop(); }catch(e){}
     $('view-detail').hidden = true;
     $('view-home').hidden = false;
     currentPlace = null;

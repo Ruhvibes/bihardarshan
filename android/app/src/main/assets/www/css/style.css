@@ -120,3 +120,26 @@ body{
   display:flex; align-items:center; justify-content:center;}
 #lightbox img{max-width:94%; max-height:90%; border-radius:8px;}
 .empty{padding:40px 20px; text-align:center; color:var(--muted); font-size:15px;}
+
+/* Cinematic Ken Burns viewer — real photos, film-like */
+.kb-slide {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.5s ease-in-out;
+  transform: scale(1);
+}
+.kb-slide.kb-active {
+  opacity: 1;
+  animation: kenburns 6s ease-in-out forwards;
+}
+@keyframes kenburns {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.15) translate(-2%, 2%); }
+}
+.kb-slide:nth-child(even).kb-active {
+  animation-name: kenburns-alt;
+}
+@keyframes kenburns-alt {
+  0% { transform: scale(1.15) translate(2%, -2%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
